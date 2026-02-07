@@ -1,0 +1,1 @@
+The system is event driven by the OS scheduler, while all decision-making is stateless and derived purely from git history
