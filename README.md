@@ -114,6 +114,26 @@ If Telegram insults you, then it’s working.
 
 ---
 
+### Health Check
+Run a one-shot validation to confirm everything is wired correctly:
+```bash
+python daily_check.py --mode=health
+```
+
+### Exit Codes
+Scripts now return meaningful exit codes:
+- 0: success
+- 1: configuration error
+- 2: dependency error
+- 3: git error
+- 4: runtime error
+
+### Central Config
+A single `config.yaml` documents all paths and schedules used by the system.
+Keep `setup_scheduler.ps1` paths in sync with this file.
+
+--- 
+
 ##  Why this exists
 
 I built this because:

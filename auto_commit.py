@@ -5,6 +5,9 @@ from git_utils import (
 )
 
 
+EXIT_OK = 0
+EXIT_GIT_ERROR = 3
+
 def _run_git_command(cmd: list[str]) -> bool:
     """
     Runs a git command.
@@ -13,13 +16,12 @@ def _run_git_command(cmd: list[str]) -> bool:
     result = subprocess.run(
         ["git"] + cmd,
         capture_output=True,
-        text=True,
-        shell=False
+        text=True
     )
     return result.returncode == 0
 
 
-def run_auto_commit() -> str:
+def run_auto_commit():
     """
     Attempts to auto-commit pending changes.
 
@@ -29,22 +31,23 @@ def run_auto_commit() -> str:
         "ERROR"
     """
     if not has_pending_changes():
-        return "NOTHING_TO_COMMIT"
+        return "NOTHING_TO_COMMIT", EXIT_OK
 
     commit_message = get_next_commit_message()
 
     if not _run_git_command(["add", "."]):
-        return "ERROR"
+        return "ERROR", EXIT_GIT_ERROR
 
     if not _run_git_command(["commit", "-m", commit_message]):
-        return "ERROR"
+        return "ERROR", EXIT_GIT_ERROR
 
     if not _run_git_command(["push", "-u", "origin", "main"]):
-        return "ERROR"
+        return "ERROR", EXIT_GIT_ERROR
 
-    return "AUTO_COMMITTED"
+    return "AUTO_COMMITTED", EXIT_OK
 
 
 if __name__ == "__main__":
-    status = run_auto_commit()
+    status, code = run_auto_commit()
     print(status)
+    raise SystemExit(code)

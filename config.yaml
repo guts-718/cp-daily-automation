@@ -1,0 +1,13 @@
+python:
+  exe: C:\Users\rahul\AppData\Local\Programs\Python\Python311\python.exe
+
+repos:
+  automation: C:\dev\cp_daily_automationr
+  target: C:\dev\cf
+
+schedule:
+  motivate: "19:00"
+  commit: "22:00"
+
+logging:
+  dir: C:\temp
