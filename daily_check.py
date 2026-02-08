@@ -2,6 +2,19 @@ import argparse
 import os
 import sys
 import subprocess
+import random
+from logger import get_log_path
+from messages import (
+    pick,
+    MSG_7PM_PRACTICED,
+    MSG_7PM_NOT_PRACTICED,
+    MSG_10PM_PRACTICED_AUTO,
+    MSG_10PM_PRACTICED_CLEAN,
+    MSG_10PM_NOT_PRACTICED_AUTO,
+    MSG_10PM_NOT_PRACTICED_CLEAN,
+    MSG_10PM_ERROR,
+)
+
 
 from git_utils import committed_today
 from auto_commit import run_auto_commit
@@ -67,26 +80,27 @@ def run_health():
 
 def run_7pm():
     if committed_today():
-        send_message("Good. At least you did one thing worthwhile today — even if you wasted most of it.")
+        send_message(pick(MSG_7PM_PRACTICED))
     else:
-        send_message("You act like you’re trying. Your effort so far says otherwise.")
+        send_message(pick(MSG_7PM_NOT_PRACTICED))
+
 
 def run_10pm():
     practiced = committed_today()
     result, code = run_auto_commit()
 
     if result == "ERROR":
-        send_message("Automation failed. Even the system is disappointed — check your repo or network.")
+        send_message(pick(MSG_10PM_ERROR))
         sys.exit(EXIT_GIT_ERROR)
-
-    if practiced and result == "AUTO_COMMITTED":
-        send_message("You did some work today. Bare minimum achieved — auto-commit cleaned up the mess.")
+    elif practiced and result == "AUTO_COMMITTED":
+        send_message(pick(MSG_10PM_PRACTICED_AUTO))
     elif practiced and result == "NOTHING_TO_COMMIT":
-        send_message("Fine. You already committed today. Not impressive, but acceptable.")
+        send_message(pick(MSG_10PM_PRACTICED_CLEAN))
     elif not practiced and result == "AUTO_COMMITTED":
-        send_message("Auto-commit saved you, not your discipline. Try actually solving a problem tomorrow.")
+        send_message(pick(MSG_10PM_NOT_PRACTICED_AUTO))
     else:
-        send_message("You did nothing today. No problems solved. No excuses.")
+        send_message(pick(MSG_10PM_NOT_PRACTICED_CLEAN))
+
 
 def main():
     ap = argparse.ArgumentParser()
