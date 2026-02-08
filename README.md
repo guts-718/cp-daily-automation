@@ -134,6 +134,72 @@ Keep `setup_scheduler.ps1` paths in sync with this file.
 
 --- 
 
+## Windows Shell Usage Notes
+
+This project uses **both CMD and PowerShell**, each for a specific purpose.
+
+### When to use CMD
+Use **Command Prompt** for:
+- Installing Python dependencies
+- Running `pip`
+- Verifying Python modules
+
+Example:
+```
+"C:\Path\To\python.exe" -m pip install -r requirements.txt
+```
+
+Reason:
+CMD ensures the **exact Python interpreter** is used. PowerShell aliases can often be misleading.
+
+---
+
+### When to use PowerShell
+Use **PowerShell** for:
+- Setting up the scheduler
+- Removing the scheduler
+- Managing scheduled tasks
+
+Example:
+```
+.\setup_scheduler.ps1
+.\kill_scheduler.ps1
+```
+
+---
+
+### Running as Administrator (Important)
+You **must** run PowerShell **as Administrator** when:
+- Creating scheduled tasks
+- Deleting scheduled tasks
+
+If you see:
+```
+Access is denied (0x80070005)
+```
+It means PowerShell was **not elevated**.
+
+To fix:
+- Open Start Menu
+- Search **PowerShell**
+- Right click → **Run as administrator**
+
+---
+
+### Summary
+
+| Task | Shell | Admin Required |
+|------|-------|----------------|
+| Install Python packages | CMD | No |
+| Run health check | CMD / PowerShell | No |
+| Setup scheduler | PowerShell | Yes |
+| Remove scheduler | PowerShell | Yes |
+
+
+
+---
+
+
 ##  Why this exists
 
 I built this because:

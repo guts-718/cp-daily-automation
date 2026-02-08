@@ -3,23 +3,39 @@
 # ============================
 
 # EDIT THESE PATHS BEFORE RUNNING (keep in sync with config.yaml)
+
 $PythonExe = "C:\Users\rahul\AppData\Local\Programs\Python\Python311\python.exe"
 $AutomationRepo = "C:\dev\cp_daily_automationr"
-$TargetRepo = "C:\dev\cf"
+
+# Load config.yaml via Python
+
+$ConfigValues = & $PythonExe "$AutomationRepo\config_loader.py"
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Failed to load config.yaml"
+    exit 1
+}
+
+$TargetRepo = $ConfigValues[0]
+$LogDir     = $ConfigValues[1]
+
+# Task names
 
 $Task7PMName  = "CP Daily Roast (7pm)"
 $Task10PMName = "CP Auto Commit & Verdict (10pm)"
 
-New-Item -ItemType Directory -Force -Path "C:\temp" | Out-Null
+# Ensure log directory exists
+New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
+
 
 $Action7PM = New-ScheduledTaskAction `
   -Execute "C:\Windows\System32\cmd.exe" `
-  -Argument "/c `"$PythonExe `"$AutomationRepo\daily_check.py`" --mode=7pm > C:\temp\cp_bot.log 2>&1`"" `
+  -Argument "/c `"$PythonExe `"$AutomationRepo\daily_check.py`" --mode=7pm > $LogDir\cp_bot.log 2>&1`"" `
   -WorkingDirectory $TargetRepo
 
 $Action10PM = New-ScheduledTaskAction `
   -Execute "C:\Windows\System32\cmd.exe" `
-  -Argument "/c `"$PythonExe `"$AutomationRepo\daily_check.py`" --mode=10pm > C:\temp\cp_bot.log 2>&1`"" `
+  -Argument "/c `"$PythonExe `"$AutomationRepo\daily_check.py`" --mode=10pm > $LogDir\cp_bot.log 2>&1`"" `
   -WorkingDirectory $TargetRepo
 
 $Trigger7PM  = New-ScheduledTaskTrigger -Daily -At 7pm
